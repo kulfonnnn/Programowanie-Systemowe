@@ -6,9 +6,14 @@
 #include <stdbool.h>  
 #include <string.h>
 #include <errno.h>
-
+#include <signal.h>
 
 int main(int argc, char *argv[]){
+
+	signal(SIGPIPE, SIG_IGN);
+	//jezeli mplayer sie zakonczy w trakcie dzialania programu, a my wyslemy write
+	// otrzymamy sigpipe ktory zamknie nasz program bez obslugi bledow
+	// ignorujemy go	
 
 
 	// sprawdzamy, czy zostal podany argument
@@ -81,7 +86,7 @@ int main(int argc, char *argv[]){
 		printf("Podaj litere\n");
 		
 		//tworzymy bufor do wpisania komendy
-		char buf[16];
+		char buf[3];
 
 		//wczytanie litery od uzytkownika
 		if (fgets(buf, sizeof(buf), stdin) == NULL){
@@ -151,6 +156,9 @@ int main(int argc, char *argv[]){
 					}
 					exit(1);
 
+				} else if (time[0] == '\n'){
+					printf("Nic nie podales, spróbuj ponownie\n");
+				
 				} else if (time[strlen(time)-1] != '\n') {
     					//jezeli na drugim od koncu miejscu w time nie ma \n
 					//to znaczy, ze wiadomosc>buifor
